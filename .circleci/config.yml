@@ -1,0 +1,29 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:10.13.0
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run: npm install
+
+      - save_cache:
+          key: v1-dependencies-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+
+      - run: npm test
+
+      - store_artifacts:
+          path: results/result.json
+
+notify:
+  webhooks:
+    - url: https://be255481.ngrok.io/taskbook/circleci/notifications
+
